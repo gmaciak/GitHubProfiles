@@ -8,8 +8,16 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import "AFNetworking.h"
 
-@interface MasterViewController ()
+NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
+
+@interface MasterViewController () {
+    AFURLSessionManager *sestionManager;
+    NSString* searchPhrase;
+    NSMutableArray* tableData;
+    NSUInteger totalResultsCount;
+}
 
 @end
 
@@ -17,6 +25,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    tableData = [NSMutableArray array];
+    
     // Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 
@@ -67,21 +77,88 @@
     }
 }
 
-#pragma mark - Table View
+#pragma mark - UISearchBarDelegate
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [[self.fetchedResultsController sections] count];
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    searchPhrase = searchBar.text;
+    totalResultsCount = 0;
+    [tableData removeAllObjects];
+    [self loadUsersWithPhrase:searchPhrase];
 }
 
+#pragma mark - GitHub Web Api requests
+
+- (AFURLSessionManager*)sestionManager {
+    if (sestionManager == nil) {
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        sestionManager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+    }
+    return sestionManager;
+}
+
+- (NSUInteger)nextPageNumber {
+    if (tableData.count == 0) {
+        return 1;
+    }
+    else if (tableData.count == totalResultsCount) {
+        return NSNotFound;
+    }
+    NSUInteger loadedPagesCount = (tableData.count/GITHUB_DEFAULT_PAGE_SIZE);
+    return loadedPagesCount + 1;
+}
+
+- (void)loadUsersWithPhrase:(NSString*)phrase {
+    NSUInteger page = [self nextPageNumber];
+    if (page != NSNotFound) {
+        NSString* searchQuery = [[NSString stringWithFormat:@"q=%@&page=%li&per_page=%li",phrase,page,GITHUB_DEFAULT_PAGE_SIZE] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        
+        NSString* urlString = [@"https://api.github.com/search/users" stringByAppendingFormat:@"?%@",searchQuery];
+        
+        NSURL *URL = [NSURL URLWithString:urlString];
+        NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+        
+        NSURLSessionDataTask *dataTask = [self.sestionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+            if (error) {
+                NSLog(@"Error: %@", error);
+            } else {
+                //            NSLog(@"%@ %@", response, responseObject);
+                [tableData addObjectsFromArray:[self userDataWithResponseObject:responseObject]];
+                //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
+                [self.tableView reloadData];
+            }
+        }];
+        [dataTask resume];
+    }
+}
+
+- (NSArray*)userDataWithResponseObject:(NSDictionary*)responseObject {
+    NSArray* items = responseObject[@"items"];
+    totalResultsCount = [(NSNumber*)responseObject[@"total_count"] unsignedIntegerValue];
+    
+    NSMutableArray* usersData = [[NSMutableArray alloc] initWithCapacity:items.count];
+    for (NSDictionary* item in items) {
+        NSMutableDictionary* userData = [[NSMutableDictionary alloc] initWithCapacity:5];
+        userData[@"id"] = item[@"id"];
+        userData[@"login"] = item[@"login"];
+        userData[@"repos_url"] = item[@"repos_url"];
+        userData[@"followers_url"] = item[@"followers_url"];
+        userData[@"avatar_url"] = item[@"avatar_url"];
+        [usersData addObject:userData];
+    }
+    
+    return usersData;
+}
+
+#pragma mark - Table View
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-    return [sectionInfo numberOfObjects];
+    return [tableData count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-    [self configureCell:cell withObject:object];
+    NSDictionary *data = tableData[indexPath.row];
+    [self configureCell:cell withObject:data];
     return cell;
 }
 
@@ -105,8 +182,8 @@
     }
 }
 
-- (void)configureCell:(UITableViewCell *)cell withObject:(NSManagedObject *)object {
-    cell.textLabel.text = [[object valueForKey:@"timeStamp"] description];
+- (void)configureCell:(UITableViewCell *)cell withObject:(NSDictionary *)object {
+    cell.textLabel.text = [object objectForKey:@"login"];
 }
 
 #pragma mark - Fetched results controller
