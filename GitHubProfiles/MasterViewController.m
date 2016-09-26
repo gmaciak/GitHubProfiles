@@ -120,10 +120,20 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
         NSURLSessionDataTask *dataTask = [self.sestionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
             if (error) {
                 NSLog(@"Error: %@", error);
+                
+                UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Ups" message:@"Could not load next users. Please wait few seconds and try again." preferredStyle:UIAlertControllerStyleAlert];
+                
+                [alert addAction:[UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [self loadUsersWithPhrase:phrase];
+                }]];
+                [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+                [self presentViewController:alert animated:YES completion:nil];
+                
             } else {
                 //            NSLog(@"%@ %@", response, responseObject);
                 [tableData addObjectsFromArray:[self userDataWithResponseObject:responseObject]];
                 //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
+                NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
                 [self.tableView reloadData];
             }
         }];
@@ -162,23 +172,9 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
     return cell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-        [context deleteObject:[self.fetchedResultsController objectAtIndexPath:indexPath]];
-            
-        NSError *error = nil;
-        if (![context save:&error]) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
+- (void)tableView:(UITableView *)tableView willDisplayCell:(nonnull UITableViewCell *)cell forRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    if (indexPath.row == tableData.count - 1 && tableData.count < totalResultsCount) {
+        [self loadUsersWithPhrase:searchPhrase];
     }
 }
 
