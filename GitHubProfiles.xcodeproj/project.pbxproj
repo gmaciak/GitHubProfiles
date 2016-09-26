@@ -17,6 +17,7 @@
 		B53F6FDE1D92FAAD00669D33 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B53F6FDC1D92FAAD00669D33 /* LaunchScreen.storyboard */; };
 		B53F6FE91D92FAAD00669D33 /* GitHubProfilesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B53F6FE81D92FAAD00669D33 /* GitHubProfilesTests.m */; };
 		B53F6FF41D92FAAD00669D33 /* GitHubProfilesUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B53F6FF31D92FAAD00669D33 /* GitHubProfilesUITests.m */; };
+		B5FA94941D941571003D2538 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FA94931D941571003D2538 /* SearchViewController.m */; };
 		CB1DA221C0AA2A27D80C9963 /* libPods-GitHubProfiles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9012E914EB5A66B23B89211B /* libPods-GitHubProfiles.a */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +61,8 @@
 		B53F6FEF1D92FAAD00669D33 /* GitHubProfilesUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GitHubProfilesUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B53F6FF31D92FAAD00669D33 /* GitHubProfilesUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GitHubProfilesUITests.m; sourceTree = "<group>"; };
 		B53F6FF51D92FAAD00669D33 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B5FA94921D941571003D2538 /* SearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchViewController.h; sourceTree = "<group>"; };
+		B5FA94931D941571003D2538 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +139,8 @@
 				B53F6FD21D92FAAD00669D33 /* MasterViewController.m */,
 				B53F6FD41D92FAAD00669D33 /* DetailViewController.h */,
 				B53F6FD51D92FAAD00669D33 /* DetailViewController.m */,
+				B5FA94921D941571003D2538 /* SearchViewController.h */,
+				B5FA94931D941571003D2538 /* SearchViewController.m */,
 				B53F6FD71D92FAAD00669D33 /* Main.storyboard */,
 				B53F6FDA1D92FAAD00669D33 /* Assets.xcassets */,
 				B53F6FDC1D92FAAD00669D33 /* LaunchScreen.storyboard */,
@@ -357,6 +362,7 @@
 				B53F6FD31D92FAAD00669D33 /* MasterViewController.m in Sources */,
 				B53F6FCD1D92FAAD00669D33 /* AppDelegate.m in Sources */,
 				B53F6FD01D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld in Sources */,
+				B5FA94941D941571003D2538 /* SearchViewController.m in Sources */,
 				B53F6FCA1D92FAAD00669D33 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
