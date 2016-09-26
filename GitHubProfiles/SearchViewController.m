@@ -20,7 +20,7 @@
     [super viewDidLoad];
     
     MasterViewController *masterController = [[self childViewControllers] firstObject];
-    masterController.managedObjectContext = [(AppDelegate*)[UIApplication sharedApplication].delegate managedObjectContext];
+//    masterController.managedObjectContext = [(AppDelegate*)[UIApplication sharedApplication].delegate managedObjectContext];
     
     self.searchBar.delegate = masterController;
     

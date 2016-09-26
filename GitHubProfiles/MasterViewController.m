@@ -29,9 +29,6 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
     
     // Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
 
@@ -69,9 +66,9 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+//        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-        [controller setDetailItem:object];
+//        [controller setDetailItem:object];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
@@ -118,19 +115,29 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
         NSURLRequest *request = [NSURLRequest requestWithURL:URL];
         
         NSURLSessionDataTask *dataTask = [self.sestionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+
+            NSHTTPURLResponse *httpResponcse = (NSHTTPURLResponse *)response;
             if (error) {
                 NSLog(@"Error: %@", error);
                 
-                UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Ups" message:@"Could not load next users. Please wait few seconds and try again." preferredStyle:UIAlertControllerStyleAlert];
+                NSUInteger rateLimitReset = [[(NSHTTPURLResponse *)response allHeaderFields][@"X-RateLimit-Reset"] integerValue];
+                NSDate* resetDate = [NSDate dateWithTimeIntervalSince1970:rateLimitReset];
                 
-                [alert addAction:[UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [self loadUsersWithPhrase:phrase];
-                }]];
-                [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-                [self presentViewController:alert animated:YES completion:nil];
-                
+                if (httpResponcse.statusCode == 403 && [resetDate compare:[NSDate date]] == NSOrderedDescending) {
+                    NSUInteger secondsLeft = rateLimitReset - [[NSDate date] timeIntervalSince1970];
+                    
+                    NSString* message = [NSString stringWithFormat:@"Could not load next users. Please wait %li second(s) and try again.",secondsLeft];
+                    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Ups" message:message preferredStyle:UIAlertControllerStyleAlert];
+                    
+                    [alert addAction:[UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        [self loadUsersWithPhrase:phrase];
+                    }]];
+                    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+                    [self presentViewController:alert animated:YES completion:nil];
+                }
             } else {
-                //            NSLog(@"%@ %@", response, responseObject);
+                NSLog(@"Responce hearders: %@",[httpResponcse allHeaderFields]);
+                
                 [tableData addObjectsFromArray:[self userDataWithResponseObject:responseObject]];
                 //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
                 NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
@@ -183,7 +190,7 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 }
 
 #pragma mark - Fetched results controller
-
+/*
 - (NSFetchedResultsController *)fetchedResultsController
 {
     if (_fetchedResultsController != nil) {
@@ -270,7 +277,7 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
     [self.tableView endUpdates];
-}
+}*/
 
 /*
 // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed. 
