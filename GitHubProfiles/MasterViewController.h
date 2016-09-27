@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#import "WebServicesController.h"
 
 @class DetailViewController;
 
@@ -17,6 +18,7 @@
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (strong, nonatomic) WebServicesController *webServicesController;
 
 - (void)insertNewObject:(id)sender;
 

@@ -20,6 +20,7 @@
     [super viewDidLoad];
     
     MasterViewController *masterController = [[self childViewControllers] firstObject];
+    masterController.webServicesController = [(AppDelegate*)[UIApplication sharedApplication].delegate webServicesController];
 //    masterController.managedObjectContext = [(AppDelegate*)[UIApplication sharedApplication].delegate managedObjectContext];
     
     self.searchBar.delegate = masterController;

@@ -10,17 +10,6 @@
 #import "DetailViewController.h"
 #import "AFNetworking.h"
 
-NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
-NSString* const GHPReposLoadingStatusKey = @"reposLoadingStatus";
-NSString* const GHPReposKey = @"repos";
-NSString* const GHPCellHeightKey = @"cellHeight";
-
-typedef NS_ENUM(NSInteger, GHPReposLoadingStatus) {
-    GHPReposLoadingStatusNotLoaded,
-    GHPReposLoadingStatusLoading,
-    GHPReposLoadingStatusLoaded
-};
-
 @interface MasterViewController () {
     AFURLSessionManager *urlSesionManager;
     NSString* searchPhrase;
@@ -47,38 +36,14 @@ typedef NS_ENUM(NSInteger, GHPReposLoadingStatus) {
     [super viewWillAppear:animated];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)insertNewObject:(id)sender {
-    NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:context];
-        
-    // If appropriate, configure the new managed object.
-    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-    [newManagedObject setValue:[NSDate date] forKey:@"timeStamp"];
-        
-    // Save the context.
-    NSError *error = nil;
-    if (![context save:&error]) {
-        // Replace this implementation with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
-    }
-}
-
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-//        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
+        NSDictionary* object = [tableData objectAtIndex:indexPath.row];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
-//        [controller setDetailItem:object];
+        [controller setDetailItem:object];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
     }
@@ -161,77 +126,14 @@ typedef NS_ENUM(NSInteger, GHPReposLoadingStatus) {
 
 - (void)loadRepos {
     
-    dispatch_group_t group = dispatch_group_create();
-    
-    BOOL hasAtLestOneTask = NO;
-    for (NSMutableDictionary* user in tableData) {
-        NSInteger reposLoadingStatus = [user[GHPReposLoadingStatusKey] integerValue];
-        if (reposLoadingStatus == GHPReposLoadingStatusNotLoaded) {
-            
-            NSString* urlString = user[@"repos_url"];
-            
-            if (urlString) {
-                if (!hasAtLestOneTask) hasAtLestOneTask = YES;
-                
-                user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusLoading);
-                
-                NSURL *URL = [NSURL URLWithString:urlString];
-                NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-                
-                NSURLSessionDataTask *dataTask = [self.urlSesionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-                    
-                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                    if (error) {
-                        NSLog(@"Error: %@", error);
-                        user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusNotLoaded);
-                        dispatch_group_leave(group);
-                    } else {
-                        NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
-                        NSMutableArray* userRepos = user[GHPReposKey];
-                        if (!userRepos) {
-                            userRepos = [NSMutableArray arrayWithCapacity:[responseObject count]];
-                            user[GHPReposKey] = userRepos;
-                        }
-                        [userRepos addObjectsFromArray:responseObject];
-                        
-                        NSString* nextReposPageURLString = [self nextPageLinkForResponse:httpResponse];
-                        user[@"repos_url"] = nextReposPageURLString;
-                        if (nextReposPageURLString) {
-                            user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusNotLoaded);
-                        }else{
-                            // repos names list
-                            NSArray* reposNames = [userRepos valueForKeyPath:@"@distinctUnionOfObjects.name"];
-                            
-                            // repos names to display
-                            NSString* titlesListString = [reposNames componentsJoinedByString:@",\n"];
-                            if (titlesListString.length > 0) {
-                                user[@"reposNames"] = titlesListString;
-                            }
-                            
-                            // repos text size
-                            CGSize size = [titlesListString sizeWithAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:11]}];
-                            user[GHPCellHeightKey] = @(size.height + 44.0f);
-                            
-                            // clean
-                            user[GHPReposKey] = nil;
-                            user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusLoaded);
-                        }
-                        dispatch_group_leave(group);
-                    }
-                }];
-                
-                dispatch_group_enter(group);
-                [dataTask resume];
-            }
-            
+    [self.webServicesController loadReposForUsers:tableData progress:^(id item) {
+        NSInteger index = [tableData indexOfObject:item];
+        if (index != NSNotFound) {
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
         }
-    }
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-        [self.tableView reloadData];
+    } completion:^{
         
-        // load next repos pages if any
-        if (hasAtLestOneTask) [self loadRepos];
-    });
+    }];
 }
 
 - (NSString*)nextPageLinkForResponse:(NSHTTPURLResponse*)response {
@@ -297,13 +199,18 @@ typedef NS_ENUM(NSInteger, GHPReposLoadingStatus) {
 }
 
 - (void)configureCell:(UITableViewCell *)cell withObject:(NSDictionary *)object {
-    cell.textLabel.text = object[@"login"];
-    cell.detailTextLabel.text = object[@"reposNames"] ?: @"User has no repository.";
+    cell.textLabel.text = object[@"login"] ?: @"";
+    NSString* reposNames = object[@"reposNames"];
+    if (reposNames) {
+        cell.detailTextLabel.text = reposNames.length > 0 ? reposNames : @"User has no repository.";
+    }else{
+        cell.detailTextLabel.text = @"";
+    }
     
     UIActivityIndicatorView* indicator = [cell.contentView viewWithTag:3];
-    if (!indicator.isAnimating && [object[GHPReposLoadingStatusKey] isEqualToNumber:@(GHPReposLoadingStatusLoading)]) {
+    if (!indicator.isAnimating && reposNames == nil) {
         [indicator startAnimating];
-    }else if (indicator.isAnimating && [object[GHPReposLoadingStatusKey] isEqualToNumber:@(GHPReposLoadingStatusLoaded)]) {
+    }else if (indicator.isAnimating && reposNames != nil) {
         [indicator stopAnimating];
     }
 }
