@@ -11,9 +11,18 @@
 #import "AFNetworking.h"
 
 NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
+NSString* const GHPReposLoadingStatusKey = @"reposLoadingStatus";
+NSString* const GHPReposKey = @"repos";
+NSString* const GHPCellHeightKey = @"cellHeight";
+
+typedef NS_ENUM(NSInteger, GHPReposLoadingStatus) {
+    GHPReposLoadingStatusNotLoaded,
+    GHPReposLoadingStatusLoading,
+    GHPReposLoadingStatusLoaded
+};
 
 @interface MasterViewController () {
-    AFURLSessionManager *sestionManager;
+    AFURLSessionManager *urlSesionManager;
     NSString* searchPhrase;
     NSMutableArray* tableData;
     NSUInteger totalResultsCount;
@@ -25,6 +34,7 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     tableData = [NSMutableArray array];
     
     // Do any additional setup after loading the view, typically from a nib.
@@ -85,12 +95,12 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 
 #pragma mark - GitHub Web Api requests
 
-- (AFURLSessionManager*)sestionManager {
-    if (sestionManager == nil) {
+- (AFURLSessionManager*)urlSesionManager {
+    if (urlSesionManager == nil) {
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        sestionManager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        urlSesionManager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
     }
-    return sestionManager;
+    return urlSesionManager;
 }
 
 - (NSUInteger)nextPageNumber {
@@ -114,16 +124,16 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
         NSURL *URL = [NSURL URLWithString:urlString];
         NSURLRequest *request = [NSURLRequest requestWithURL:URL];
         
-        NSURLSessionDataTask *dataTask = [self.sestionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        NSURLSessionDataTask *dataTask = [self.urlSesionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
 
-            NSHTTPURLResponse *httpResponcse = (NSHTTPURLResponse *)response;
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
             if (error) {
                 NSLog(@"Error: %@", error);
                 
                 NSUInteger rateLimitReset = [[(NSHTTPURLResponse *)response allHeaderFields][@"X-RateLimit-Reset"] integerValue];
                 NSDate* resetDate = [NSDate dateWithTimeIntervalSince1970:rateLimitReset];
                 
-                if (httpResponcse.statusCode == 403 && [resetDate compare:[NSDate date]] == NSOrderedDescending) {
+                if (httpResponse.statusCode == 403 && [resetDate compare:[NSDate date]] == NSOrderedDescending) {
                     NSUInteger secondsLeft = rateLimitReset - [[NSDate date] timeIntervalSince1970];
                     
                     NSString* message = [NSString stringWithFormat:@"Could not load next users. Please wait %li second(s) and try again.",secondsLeft];
@@ -136,16 +146,108 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
                     [self presentViewController:alert animated:YES completion:nil];
                 }
             } else {
-                NSLog(@"Responce hearders: %@",[httpResponcse allHeaderFields]);
+                NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
                 
                 [tableData addObjectsFromArray:[self userDataWithResponseObject:responseObject]];
                 //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
                 NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
                 [self.tableView reloadData];
+                [self loadRepos];
             }
         }];
         [dataTask resume];
     }
+}
+
+- (void)loadRepos {
+    
+    dispatch_group_t group = dispatch_group_create();
+    
+    BOOL hasAtLestOneTask = NO;
+    for (NSMutableDictionary* user in tableData) {
+        NSInteger reposLoadingStatus = [user[GHPReposLoadingStatusKey] integerValue];
+        if (reposLoadingStatus == GHPReposLoadingStatusNotLoaded) {
+            
+            NSString* urlString = user[@"repos_url"];
+            
+            if (urlString) {
+                if (!hasAtLestOneTask) hasAtLestOneTask = YES;
+                
+                user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusLoading);
+                
+                NSURL *URL = [NSURL URLWithString:urlString];
+                NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+                
+                NSURLSessionDataTask *dataTask = [self.urlSesionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+                    
+                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                    if (error) {
+                        NSLog(@"Error: %@", error);
+                        user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusNotLoaded);
+                        dispatch_group_leave(group);
+                    } else {
+                        NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
+                        NSMutableArray* userRepos = user[GHPReposKey];
+                        if (!userRepos) {
+                            userRepos = [NSMutableArray arrayWithCapacity:[responseObject count]];
+                            user[GHPReposKey] = userRepos;
+                        }
+                        [userRepos addObjectsFromArray:responseObject];
+                        
+                        NSString* nextReposPageURLString = [self nextPageLinkForResponse:httpResponse];
+                        user[@"repos_url"] = nextReposPageURLString;
+                        if (nextReposPageURLString) {
+                            user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusNotLoaded);
+                        }else{
+                            // repos names list
+                            NSArray* reposNames = [userRepos valueForKeyPath:@"@distinctUnionOfObjects.name"];
+                            
+                            // repos names to display
+                            NSString* titlesListString = [reposNames componentsJoinedByString:@",\n"];
+                            if (titlesListString.length > 0) {
+                                user[@"reposNames"] = titlesListString;
+                            }
+                            
+                            // repos text size
+                            CGSize size = [titlesListString sizeWithAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:11]}];
+                            user[GHPCellHeightKey] = @(size.height + 44.0f);
+                            
+                            // clean
+                            user[GHPReposKey] = nil;
+                            user[GHPReposLoadingStatusKey] = @(GHPReposLoadingStatusLoaded);
+                        }
+                        dispatch_group_leave(group);
+                    }
+                }];
+                
+                dispatch_group_enter(group);
+                [dataTask resume];
+            }
+            
+        }
+    }
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+        
+        // load next repos pages if any
+        if (hasAtLestOneTask) [self loadRepos];
+    });
+}
+
+- (NSString*)nextPageLinkForResponse:(NSHTTPURLResponse*)response {
+    NSString* linkHeader = [response allHeaderFields][@"Link"];
+    NSString* matchStriing = nil;
+    if (linkHeader) {
+        // regex to get the next page url string
+        NSRegularExpression* nextPageLinkRegex = [NSRegularExpression regularExpressionWithPattern:@"<(.+)>; rel=\"next\"" options:NSRegularExpressionCaseInsensitive error:nil];
+        NSArray* matches = [nextPageLinkRegex matchesInString:linkHeader options:0 range:NSMakeRange(0, linkHeader.length)];
+        NSTextCheckingResult* match = [matches firstObject];
+        
+        if (match.numberOfRanges > 1) {
+            matchStriing = [linkHeader substringWithRange:[match rangeAtIndex:1]];
+        }
+    }
+    return matchStriing;
 }
 
 - (NSArray*)userDataWithResponseObject:(NSDictionary*)responseObject {
@@ -168,6 +270,15 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 
 #pragma mark - Table View
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSDictionary *data = tableData[indexPath.row];
+    NSNumber* height = data[GHPCellHeightKey];
+    if (height) {
+        return [height floatValue];
+    }
+    return 44.0;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [tableData count];
 }
@@ -186,7 +297,15 @@ NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
 }
 
 - (void)configureCell:(UITableViewCell *)cell withObject:(NSDictionary *)object {
-    cell.textLabel.text = [object objectForKey:@"login"];
+    cell.textLabel.text = object[@"login"];
+    cell.detailTextLabel.text = object[@"reposNames"] ?: @"User has no repository.";
+    
+    UIActivityIndicatorView* indicator = [cell.contentView viewWithTag:3];
+    if (!indicator.isAnimating && [object[GHPReposLoadingStatusKey] isEqualToNumber:@(GHPReposLoadingStatusLoading)]) {
+        [indicator startAnimating];
+    }else if (indicator.isAnimating && [object[GHPReposLoadingStatusKey] isEqualToNumber:@(GHPReposLoadingStatusLoaded)]) {
+        [indicator stopAnimating];
+    }
 }
 
 #pragma mark - Fetched results controller

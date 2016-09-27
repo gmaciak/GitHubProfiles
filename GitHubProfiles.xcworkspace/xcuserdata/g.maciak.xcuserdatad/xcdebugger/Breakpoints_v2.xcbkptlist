@@ -68,11 +68,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GitHubProfiles/MasterViewController.m"
-            timestampString = "496593472.769069"
+            timestampString = "496681757.931148"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
             landmarkName = "-insertNewObject:"
             landmarkType = "5">
          </BreakpointContent>
@@ -84,11 +84,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GitHubProfiles/MasterViewController.m"
-            timestampString = "496593472.769069"
+            timestampString = "496681757.931148"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "-searchBarSearchButtonClicked:"
             landmarkType = "5">
          </BreakpointContent>
@@ -100,12 +100,60 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GitHubProfiles/MasterViewController.m"
-            timestampString = "496595157.577684"
+            timestampString = "496681757.931148"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "184"
-            endingLineNumber = "184"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
             landmarkName = "-tableView:willDisplayCell:forRowAtIndexPath:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GitHubProfiles/MasterViewController.m"
+            timestampString = "496681757.931148"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "231"
+            endingLineNumber = "231"
+            landmarkName = "-loadRepos"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GitHubProfiles/MasterViewController.m"
+            timestampString = "496681757.931148"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
+            landmarkName = "-configureCell:withObject:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GitHubProfiles/MasterViewController.m"
+            timestampString = "496681757.931148"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "217"
+            endingLineNumber = "217"
+            landmarkName = "-loadRepos"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
