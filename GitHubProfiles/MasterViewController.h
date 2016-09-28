@@ -20,7 +20,4 @@
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (strong, nonatomic) WebServicesController *webServicesController;
 
-- (void)insertNewObject:(id)sender;
-
 @end
-

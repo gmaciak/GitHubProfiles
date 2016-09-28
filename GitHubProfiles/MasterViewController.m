@@ -49,6 +49,11 @@
     }
 }
 
+// to moj kod w ios i dziala
+// druga linijka
+// wszystko dziala
+// wszystko sie dalej kompiluje
+
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
@@ -82,45 +87,15 @@
 - (void)loadUsersWithPhrase:(NSString*)phrase {
     NSUInteger page = [self nextPageNumber];
     if (page != NSNotFound) {
-        NSString* searchQuery = [[NSString stringWithFormat:@"q=%@&page=%li&per_page=%li",phrase,page,GITHUB_DEFAULT_PAGE_SIZE] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-        
-        NSString* urlString = [@"https://api.github.com/search/users" stringByAppendingFormat:@"?%@",searchQuery];
-        
-        NSURL *URL = [NSURL URLWithString:urlString];
-        NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-        
-        NSURLSessionDataTask *dataTask = [self.urlSesionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            if (error) {
-                NSLog(@"Error: %@", error);
-                
-                NSUInteger rateLimitReset = [[(NSHTTPURLResponse *)response allHeaderFields][@"X-RateLimit-Reset"] integerValue];
-                NSDate* resetDate = [NSDate dateWithTimeIntervalSince1970:rateLimitReset];
-                
-                if (httpResponse.statusCode == 403 && [resetDate compare:[NSDate date]] == NSOrderedDescending) {
-                    NSUInteger secondsLeft = rateLimitReset - [[NSDate date] timeIntervalSince1970];
-                    
-                    NSString* message = [NSString stringWithFormat:@"Could not load next users. Please wait %li second(s) and try again.",secondsLeft];
-                    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Ups" message:message preferredStyle:UIAlertControllerStyleAlert];
-                    
-                    [alert addAction:[UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                        [self loadUsersWithPhrase:phrase];
-                    }]];
-                    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-                    [self presentViewController:alert animated:YES completion:nil];
-                }
-            } else {
-                NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
-                
-                [tableData addObjectsFromArray:[self userDataWithResponseObject:responseObject]];
+        [self.webServicesController searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
+            if (data) {
+                [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];
                 //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
                 NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
                 [self.tableView reloadData];
                 [self loadRepos];
             }
         }];
-        [dataTask resume];
     }
 }
 

@@ -27,8 +27,8 @@
     
 //    self.navigationItem.leftBarButtonItem = masterController.editButtonItem;
     
-//    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:masterController action:@selector(insertNewObject:)];
-//    self.navigationItem.rightBarButtonItem = addButton;
+    UIBarButtonItem *loginButton = [[UIBarButtonItem alloc] initWithTitle:@"Login" style:UIBarButtonItemStylePlain target:masterController.webServicesController action:@selector(login:)];
+    self.navigationItem.rightBarButtonItem = loginButton;
 }
 
 /*

@@ -19,6 +19,7 @@
 		B53F6FF41D92FAAD00669D33 /* GitHubProfilesUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B53F6FF31D92FAAD00669D33 /* GitHubProfilesUITests.m */; };
 		B5FA94941D941571003D2538 /* SearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FA94931D941571003D2538 /* SearchViewController.m */; };
 		B5FA94971D9ACC53003D2538 /* WebServicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FA94961D9ACC53003D2538 /* WebServicesController.m */; };
+		B5FA949A1D9AEB09003D2538 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FA94991D9AEB09003D2538 /* WebViewController.m */; };
 		CB1DA221C0AA2A27D80C9963 /* libPods-GitHubProfiles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9012E914EB5A66B23B89211B /* libPods-GitHubProfiles.a */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +67,8 @@
 		B5FA94931D941571003D2538 /* SearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchViewController.m; sourceTree = "<group>"; };
 		B5FA94951D9ACC53003D2538 /* WebServicesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebServicesController.h; sourceTree = "<group>"; };
 		B5FA94961D9ACC53003D2538 /* WebServicesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebServicesController.m; sourceTree = "<group>"; };
+		B5FA94981D9AEB09003D2538 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
+		B5FA94991D9AEB09003D2538 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,12 +143,14 @@
 				B53F6FCC1D92FAAD00669D33 /* AppDelegate.m */,
 				B5FA94951D9ACC53003D2538 /* WebServicesController.h */,
 				B5FA94961D9ACC53003D2538 /* WebServicesController.m */,
+				B5FA94921D941571003D2538 /* SearchViewController.h */,
+				B5FA94931D941571003D2538 /* SearchViewController.m */,
 				B53F6FD11D92FAAD00669D33 /* MasterViewController.h */,
 				B53F6FD21D92FAAD00669D33 /* MasterViewController.m */,
 				B53F6FD41D92FAAD00669D33 /* DetailViewController.h */,
 				B53F6FD51D92FAAD00669D33 /* DetailViewController.m */,
-				B5FA94921D941571003D2538 /* SearchViewController.h */,
-				B5FA94931D941571003D2538 /* SearchViewController.m */,
+				B5FA94981D9AEB09003D2538 /* WebViewController.h */,
+				B5FA94991D9AEB09003D2538 /* WebViewController.m */,
 				B53F6FD71D92FAAD00669D33 /* Main.storyboard */,
 				B53F6FDA1D92FAAD00669D33 /* Assets.xcassets */,
 				B53F6FDC1D92FAAD00669D33 /* LaunchScreen.storyboard */,
@@ -252,6 +257,7 @@
 				TargetAttributes = {
 					B53F6FC41D92FAAD00669D33 = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 2Q58JJ9J34;
 					};
 					B53F6FE31D92FAAD00669D33 = {
 						CreatedOnToolsVersion = 7.3;
@@ -366,6 +372,7 @@
 				B53F6FD61D92FAAD00669D33 /* DetailViewController.m in Sources */,
 				B53F6FD31D92FAAD00669D33 /* MasterViewController.m in Sources */,
 				B53F6FCD1D92FAAD00669D33 /* AppDelegate.m in Sources */,
+				B5FA949A1D9AEB09003D2538 /* WebViewController.m in Sources */,
 				B53F6FD01D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld in Sources */,
 				B5FA94941D941571003D2538 /* SearchViewController.m in Sources */,
 				B5FA94971D9ACC53003D2538 /* WebServicesController.m in Sources */,
@@ -442,6 +449,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -464,6 +472,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -486,6 +495,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -501,6 +511,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -511,10 +522,12 @@
 			baseConfigurationReference = 38B7819702CE232CBBE5B793 /* Pods-GitHubProfiles.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = GitHubProfiles/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = prv.gm.GitHubProfiles;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -523,10 +536,12 @@
 			baseConfigurationReference = 0F56DE7B7390A5E54906ABCC /* Pods-GitHubProfiles.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = GitHubProfiles/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = prv.gm.GitHubProfiles;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
