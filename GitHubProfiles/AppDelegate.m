@@ -34,11 +34,9 @@
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
     NSLog(@"[Line %4d] %s URL: %@\nOptions: %@",__LINE__,__PRETTY_FUNCTION__,url.absoluteString, options);
     
-    NSArray* paramsComponents = [url.query componentsSeparatedByString:@"&"];
-    for (NSString* paramString in paramsComponents) {
-        if ([paramString hasPrefix:@"code="]) {
-            [_webServicesController getAccessTokenWithCode:[paramString substringFromIndex:5]];
-        }
+    NSDictionary* params = [WebServicesController paramsDictFromQuery:url.query];
+    if (params[@"code"]) {
+        [_webServicesController getAccessTokenWithCode:params[@"code"]];
     }
     return YES;
 }

@@ -27,7 +27,6 @@ typedef NS_ENUM(NSInteger, GHPLoadingStatus) {
 @interface WebServicesController : NSObject {
     AFHTTPSessionManager *urlSesionManager;
     __weak UIViewController* presentedViewController;
-    NSUInteger totalResultsCount;
 }
 
 @property (strong, nonatomic) NSString *accessToken;
@@ -37,6 +36,8 @@ typedef NS_ENUM(NSInteger, GHPLoadingStatus) {
 - (void)getAccessTokenWithCode:(NSString*)code;
 - (void)searchUsersWithPhrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler;
 - (void)loadReposForUsers:(NSArray*)usersData progress:(void (^)(id item))progressHandler completion:(void (^)(void))completionHandler;
+
+- (void)cancellAllTasks;
 
 + (NSDictionary*)paramsDictFromQuery:(NSString*)queryString;
 

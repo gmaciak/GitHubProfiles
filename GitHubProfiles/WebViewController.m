@@ -24,12 +24,19 @@
     
     UIBarButtonItem *loginButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh:)];
     self.navigationItem.rightBarButtonItem = loginButton;
+    
+    UIBarButtonItem *dismissButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(dissmiss:)];
+    self.navigationItem.leftBarButtonItem = dismissButton;
 }
 
 - (void)refresh:(id)sender {
     NSURL *url = [NSURL URLWithString:self.startURL];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
     [_webView loadRequest:requestObj];
+}
+
+- (void)dissmiss:(id)sender {
+    [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

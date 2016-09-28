@@ -80,6 +80,7 @@
     if (phrase.length > 0) {
         NSUInteger page = [self nextPageNumber];
         if (page != NSNotFound) {
+            [self.webServicesController cancellAllTasks];
             [self.webServicesController searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
                 if (data) {
                     [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];

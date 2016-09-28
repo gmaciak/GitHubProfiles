@@ -21,12 +21,18 @@ NSString* const GHPCellHeightKey = @"cellHeight";
 
 @implementation WebServicesController
 
-- (AFHTTPSessionManager*)urlSesionManager {
+- (AFHTTPSessionManager*)urlSessionManager {
     if (urlSesionManager == nil) {
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         urlSesionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     }
     return urlSesionManager;
+}
+
+- (void)cancellAllTasks {
+    for (NSURLSessionTask* task in [[self urlSessionManager] tasks]) {
+        [task cancel];
+    };
 }
 
 - (void)dissmissPresentedViewController {
@@ -89,7 +95,7 @@ NSString* const GHPCellHeightKey = @"cellHeight";
                 [request setValue:[NSString stringWithFormat:@"token %@",self.accessToken] forHTTPHeaderField:@"Authorization"];
             }
             
-            NSURLSessionDataTask *dataTask = [self.urlSesionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+            NSURLSessionDataTask *dataTask = [self.urlSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
                 
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
                 if (error) {
@@ -139,7 +145,7 @@ NSString* const GHPCellHeightKey = @"cellHeight";
         [request setValue:[NSString stringWithFormat:@"token %@",self.accessToken] forHTTPHeaderField:@"Authorization"];
     }
     
-    NSURLSessionDataTask *dataTask = [self.urlSesionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+    NSURLSessionDataTask *dataTask = [self.urlSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         if (error) {
