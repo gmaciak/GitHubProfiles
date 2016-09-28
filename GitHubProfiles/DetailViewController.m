@@ -8,6 +8,7 @@
 
 #import "DetailViewController.h"
 #import "AFNetworking.h"
+#import "UIImageView+AFNetworking.h"
 
 @interface DetailViewController ()
 
@@ -29,7 +30,10 @@
 - (void)configureView {
     // Update the user interface for the detail item.
     if (self.detailItem) {
-        self.detailDescriptionLabel.text = [NSString stringWithFormat:@""];
+        NSString* avatarURLString = _detailItem[@"avatar_url"];
+        NSURL* url = [NSURL URLWithString:avatarURLString];
+        [self.avatarImageView setImageWithURL:url];
+        self.detailDescriptionLabel.text = [NSString stringWithFormat:@"Login: %@\n",_detailItem[@"login"]];
     }
 }
 
