@@ -49,11 +49,6 @@
     }
 }
 
-// to moj kod w ios i dziala
-// druga linijka
-// wszystko dziala
-// wszystko sie dalej kompiluje
-
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
