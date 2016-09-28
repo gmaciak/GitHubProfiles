@@ -33,8 +33,27 @@
         NSString* avatarURLString = _detailItem[@"avatar_url"];
         NSURL* url = [NSURL URLWithString:avatarURLString];
         [self.avatarImageView setImageWithURL:url];
-        self.detailDescriptionLabel.text = [NSString stringWithFormat:@"Login: %@\n",_detailItem[@"login"]];
+        [self reloadDetails];
+        if (_detailItem[@"followersCount"] == nil) {
+            [self.webServicesController getFollowersCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
+                _detailItem[@"followersCount"] = @(count);
+                [self reloadDetails];
+            }];
+        }
+        if (_detailItem[@"starsCount"] == nil) {
+            [self.webServicesController getStarsCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
+                _detailItem[@"starsCount"] = @(count);
+                [self reloadDetails];
+            }];
+        }
     }
+}
+
+- (void)reloadDetails {
+    NSMutableString* detailText = [NSMutableString stringWithFormat:@"Login: %@\n",_detailItem[@"login"]];
+    [detailText appendFormat:@"\nFollowers: %@", _detailItem[@"followersCount"] ?: @"--"];
+    [detailText appendFormat:@"\nStarred %@ repos", _detailItem[@"starsCount"] ?: @"--"];
+    self.detailDescriptionLabel.text = detailText;
 }
 
 - (void)viewDidLoad {

@@ -21,6 +21,10 @@
 
 @implementation MasterViewController
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -29,6 +33,8 @@
     // Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
     self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginNotificationHandler:) name:GHPWebServisesControllerDidLoginNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -42,6 +48,10 @@
     [self loadUsersWithPhrase:phrase];
 }
 
+-(void)loginNotificationHandler:(NSNotification*)notification {
+    [self searchWithPhrase:searchPhrase];
+}
+
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -49,6 +59,7 @@
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         NSDictionary* object = [tableData objectAtIndex:indexPath.row];
         DetailViewController *controller = (DetailViewController *)[[segue destinationViewController] topViewController];
+        controller.webServicesController = self.webServicesController;
         [controller setDetailItem:object];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
@@ -65,17 +76,6 @@
 
 #pragma mark - GitHub Web Api requests
 
-- (NSUInteger)nextPageNumber {
-    if (tableData.count == 0) {
-        return 1;
-    }
-    else if (tableData.count == totalResultsCount) {
-        return NSNotFound;
-    }
-    NSUInteger loadedPagesCount = (tableData.count/GITHUB_DEFAULT_PAGE_SIZE);
-    return loadedPagesCount + 1;
-}
-
 - (void)loadUsersWithPhrase:(NSString*)phrase {
     if (phrase.length > 0) {
         NSUInteger page = [self nextPageNumber];
@@ -84,7 +84,7 @@
             [self.webServicesController searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
                 if (data) {
                     [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];
-                    //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
+//                    [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
                     NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
                     [self.tableView reloadData];
                     [self loadRepos];
@@ -106,6 +106,19 @@
     } completion:^{
         
     }];
+}
+
+#pragma mark GitHub Web Api helpers
+
+- (NSUInteger)nextPageNumber {
+    if (tableData.count == 0) {
+        return 1;
+    }
+    else if (tableData.count == totalResultsCount) {
+        return NSNotFound;
+    }
+    NSUInteger loadedPagesCount = (tableData.count/GITHUB_DEFAULT_PAGE_SIZE);
+    return loadedPagesCount + 1;
 }
 
 - (NSString*)nextPageLinkForResponse:(NSHTTPURLResponse*)response {
@@ -172,17 +185,25 @@
 
 - (void)configureCell:(UITableViewCell *)cell withObject:(NSDictionary *)object {
     cell.textLabel.text = object[@"login"] ?: @"";
+    
+    BOOL shouldShowIndicator = YES;
     NSString* reposNames = object[@"reposNames"];
     if (reposNames) {
         cell.detailTextLabel.text = reposNames.length > 0 ? reposNames : @"User has no repository.";
-    }else{
+        shouldShowIndicator = NO;
+    }
+    else if ([object[GHPLoadingStatusKey] integerValue] == GHPLoadingStatusError) {
+        cell.detailTextLabel.text = @"You need to login to get repos info.";
+        shouldShowIndicator = NO;
+    }
+    else{
         cell.detailTextLabel.text = @"";
     }
     
     UIActivityIndicatorView* indicator = [cell.contentView viewWithTag:3];
-    if (!indicator.isAnimating && reposNames == nil) {
+    if (!indicator.isAnimating && shouldShowIndicator) {
         [indicator startAnimating];
-    }else if (indicator.isAnimating && reposNames != nil) {
+    }else if (indicator.isAnimating && !shouldShowIndicator) {
         [indicator stopAnimating];
     }
 }

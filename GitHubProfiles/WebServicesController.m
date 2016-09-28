@@ -19,6 +19,8 @@ NSString* const GHPDataKey = @"data";
 NSString* const GHPURLKey = @"url";
 NSString* const GHPCellHeightKey = @"cellHeight";
 
+NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesControllerDidLoginNotification";
+
 @implementation WebServicesController
 
 - (AFHTTPSessionManager*)urlSessionManager {
@@ -35,7 +37,7 @@ NSString* const GHPCellHeightKey = @"cellHeight";
     };
 }
 
-- (void)dissmissPresentedViewController {
+- (void)dismissPresentedViewController {
     [presentedViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -65,17 +67,23 @@ NSString* const GHPCellHeightKey = @"cellHeight";
     
     [sessionManager POST:urlString parameters:params progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         
+        // parse responce
         NSString* responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
         NSDictionary* responseParams = [[self class] paramsDictFromQuery:responseString];
+        
+        // store token
         self.accessToken = responseParams[@"access_token"];
-        [self dissmissPresentedViewController];
+        
+        // dismiss login controller
+        [self dismissPresentedViewController];
+        
+        // post GHPWebServisesControllerDidLoginNotification
+        [[NSNotificationCenter defaultCenter] postNotificationName:GHPWebServisesControllerDidLoginNotification object:self];
         
     } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         NSLog(@"Error: %@", error);
     }];
 }
-
-
 
 - (void)loadAllPagesWithURLString:(NSString*)urlString result:(NSMutableDictionary*)result completion:(void (^)(id result, NSHTTPURLResponse* lastResponse, NSError* error))completionHandler {
     if (result == nil) {
@@ -136,7 +144,7 @@ NSString* const GHPCellHeightKey = @"cellHeight";
 }
 
 - (void)searchUsersWithPhrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler {
-    NSString* searchQuery = [[NSString stringWithFormat:@"q=%@&sort=joined&order=asc&page=%li&per_page=%li",phrase,page,GITHUB_DEFAULT_PAGE_SIZE] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    NSString* searchQuery = [[NSString stringWithFormat:@"q=%@&page=%li&per_page=%li",phrase,page,GITHUB_DEFAULT_PAGE_SIZE] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
     NSString* urlString = [@"https://api.github.com/search/users" stringByAppendingFormat:@"?%@",searchQuery];
     NSURL *URL = [NSURL URLWithString:urlString];
@@ -192,7 +200,7 @@ NSString* const GHPCellHeightKey = @"cellHeight";
                 [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
                     if (error) {
                         NSLog(@"Error: %@", error);
-                        user[GHPLoadingStatusKey] = @(GHPLoadingStatusNotLoaded);
+                        user[GHPLoadingStatusKey] = @(GHPLoadingStatusError);
 
                     } else {
                         NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
@@ -226,6 +234,36 @@ NSString* const GHPCellHeightKey = @"cellHeight";
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         if (completionHandler) completionHandler();
     });
+}
+
+- (void)getFollowersCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler {
+    NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/user/%@/followers",[userID stringValue]];
+    [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
+        if (error) {
+            //NSLog(@"Error: %@", error);
+        } else {
+            //NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
+            NSMutableArray* items = result[GHPDataKey];
+            if (completionHandler) {
+                completionHandler(items.count);
+            }
+        }
+    }];
+}
+
+- (void)getStarsCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler {
+    NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/user/%@/starred",[userID stringValue]];
+    [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
+        if (error) {
+            NSLog(@"Error: %@", error);
+        } else {
+            NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
+            NSMutableArray* items = result[GHPDataKey];
+            if (completionHandler) {
+                completionHandler(items.count);
+            }
+        }
+    }];
 }
 
 - (NSString*)nextPageLinkForResponse:(NSHTTPURLResponse*)response {

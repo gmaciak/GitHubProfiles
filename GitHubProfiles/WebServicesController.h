@@ -21,7 +21,8 @@ FOUNDATION_EXPORT NSString* const GHPCellHeightKey;
 typedef NS_ENUM(NSInteger, GHPLoadingStatus) {
     GHPLoadingStatusNotLoaded,
     GHPLoadingStatusLoading,
-    GHPLoadingStatusLoaded
+    GHPLoadingStatusLoaded,
+    GHPLoadingStatusError
 };
 
 @interface WebServicesController : NSObject {
@@ -36,9 +37,13 @@ typedef NS_ENUM(NSInteger, GHPLoadingStatus) {
 - (void)getAccessTokenWithCode:(NSString*)code;
 - (void)searchUsersWithPhrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler;
 - (void)loadReposForUsers:(NSArray*)usersData progress:(void (^)(id item))progressHandler completion:(void (^)(void))completionHandler;
-
+- (void)getFollowersCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler;
+- (void)getStarsCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler;
 - (void)cancellAllTasks;
 
 + (NSDictionary*)paramsDictFromQuery:(NSString*)queryString;
 
 @end
+
+FOUNDATION_EXPORT NSString* const GHPWebServisesControllerDidLoginNotification;
+

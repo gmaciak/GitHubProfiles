@@ -18,6 +18,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationItem.title = @"Search";
     
     MasterViewController *masterController = [[self childViewControllers] firstObject];
     masterController.webServicesController = [(AppDelegate*)[UIApplication sharedApplication].delegate webServicesController];
