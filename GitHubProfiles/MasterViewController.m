@@ -36,6 +36,12 @@
     [super viewWillAppear:animated];
 }
 
+- (void)searchWithPhrase:(NSString*)phrase {
+    totalResultsCount = 0;
+    [tableData removeAllObjects];
+    [self loadUsersWithPhrase:phrase];
+}
+
 #pragma mark - Segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -51,22 +57,13 @@
 
 #pragma mark - UISearchBarDelegate
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(searchWithPhrase:) object:searchPhrase];
     searchPhrase = searchBar.text;
-    totalResultsCount = 0;
-    [tableData removeAllObjects];
-    [self loadUsersWithPhrase:searchPhrase];
+    [self performSelector:@selector(searchWithPhrase:) withObject:searchPhrase afterDelay:0.2];
 }
 
 #pragma mark - GitHub Web Api requests
-
-- (AFURLSessionManager*)urlSesionManager {
-    if (urlSesionManager == nil) {
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        urlSesionManager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
-    }
-    return urlSesionManager;
-}
 
 - (NSUInteger)nextPageNumber {
     if (tableData.count == 0) {
@@ -80,17 +77,21 @@
 }
 
 - (void)loadUsersWithPhrase:(NSString*)phrase {
-    NSUInteger page = [self nextPageNumber];
-    if (page != NSNotFound) {
-        [self.webServicesController searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
-            if (data) {
-                [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];
-                //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
-                NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
-                [self.tableView reloadData];
-                [self loadRepos];
-            }
-        }];
+    if (phrase.length > 0) {
+        NSUInteger page = [self nextPageNumber];
+        if (page != NSNotFound) {
+            [self.webServicesController searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
+                if (data) {
+                    [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];
+                    //            [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
+                    NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
+                    [self.tableView reloadData];
+                    [self loadRepos];
+                }
+            }];
+        }
+    }else{
+        [self.tableView reloadData];
     }
 }
 

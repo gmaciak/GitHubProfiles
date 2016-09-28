@@ -40,9 +40,6 @@
             [_webServicesController getAccessTokenWithCode:[paramString substringFromIndex:5]];
         }
     }
-    
-    
-    
     return YES;
 }
 
