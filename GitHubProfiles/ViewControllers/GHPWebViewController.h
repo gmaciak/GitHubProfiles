@@ -1,5 +1,5 @@
 //
-//  WebViewController.h
+//  GHPWebViewController.h
 //  GitHubProfiles
 //
 //  Created by Grzegorz Maciak on 27.09.2016.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WebViewController : UIViewController
+@interface GHPWebViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UIWebView* webView;
 @property (strong, nonatomic) NSString* startURL;

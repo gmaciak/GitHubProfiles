@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "184FD6B0D50CA4D6FF6536D96FC0E941E894CE72",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "091D4FD65AFE2641557A1E2391952E8CAE831275" : 0,
+    "184FD6B0D50CA4D6FF6536D96FC0E941E894CE72" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "6060925F-C2D8-44F1-BDC0-684053836332",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "091D4FD65AFE2641557A1E2391952E8CAE831275" : "GitHubProfiles\/GitHubProfiles\/Libs\/DSESingleton\/",
+    "184FD6B0D50CA4D6FF6536D96FC0E941E894CE72" : "GitHubProfiles\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "GitHubProfiles",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "GitHubProfiles.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gmaciak\/DSESingleton.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "091D4FD65AFE2641557A1E2391952E8CAE831275"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gmaciak\/GitHubProfiles.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "184FD6B0D50CA4D6FF6536D96FC0E941E894CE72"
+    }
+  ]
+}

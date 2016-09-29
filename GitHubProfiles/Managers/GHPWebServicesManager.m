@@ -1,13 +1,13 @@
 //
-//  WebServicesController.m
+//  GHPWebServicesManager.m
 //  GitHubProfiles
 //
 //  Created by Grzegorz Maciak on 27.09.2016.
 //  Copyright © 2016 Grzegorz Maciak. All rights reserved.
 //
 
-#import "WebServicesController.h"
-#import "WebViewController.h"
+#import "GHPWebServicesManager.h"
+#import "GHPWebViewController.h"
 
 NSString* const GITHUB_API_CLIENT_ID = @"cd9035e4a1e1b78ebeed";
 NSString* const GITHUB_API_APP_SECRET = @"06d24004d26e44a626917fa1b39d65bf5a4fb838";
@@ -21,7 +21,7 @@ NSString* const GHPCellHeightKey = @"cellHeight";
 
 NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesControllerDidLoginNotification";
 
-@implementation WebServicesController
+@implementation GHPWebServicesManager
 
 - (AFHTTPSessionManager*)urlSessionManager {
     if (urlSesionManager == nil) {
@@ -44,7 +44,7 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
 - (void)login:(id)sender {
     NSString* urlString = [NSString stringWithFormat: @"https://github.com/login/oauth/authorize?client_id=%@",GITHUB_API_CLIENT_ID];
     
-    WebViewController* controller = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"WebViewController"];
+    GHPWebViewController* controller = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"WebViewController"];
     controller.startURL = urlString;
     
     UINavigationController* navigationController = [[UINavigationController alloc] initWithRootViewController:controller];

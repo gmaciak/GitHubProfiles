@@ -6,15 +6,15 @@
 //  Copyright © 2016 Grzegorz Maciak. All rights reserved.
 //
 
-#import "DetailViewController.h"
-#import "AFNetworking.h"
+#import "GHPDetailViewController.h"
 #import "UIImageView+AFNetworking.h"
+#import "GHPWebServicesManager.h"
 
-@interface DetailViewController ()
+@interface GHPDetailViewController ()
 
 @end
 
-@implementation DetailViewController
+@implementation GHPDetailViewController
 
 #pragma mark - Managing the detail item
 
@@ -35,13 +35,13 @@
         [self.avatarImageView setImageWithURL:url];
         [self reloadDetails];
         if (_detailItem[@"followersCount"] == nil) {
-            [self.webServicesController getFollowersCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
+            [[GHPWebServicesManager sharedInstance] getFollowersCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
                 _detailItem[@"followersCount"] = @(count);
                 [self reloadDetails];
             }];
         }
         if (_detailItem[@"starsCount"] == nil) {
-            [self.webServicesController getStarsCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
+            [[GHPWebServicesManager sharedInstance] getStarsCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
                 _detailItem[@"starsCount"] = @(count);
                 [self reloadDetails];
             }];

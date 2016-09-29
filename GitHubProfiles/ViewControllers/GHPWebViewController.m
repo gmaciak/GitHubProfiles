@@ -1,18 +1,18 @@
 //
-//  WebViewController.m
+//  GHPWebViewController.m
 //  GitHubProfiles
 //
 //  Created by Grzegorz Maciak on 27.09.2016.
 //  Copyright © 2016 Grzegorz Maciak. All rights reserved.
 //
 
-#import "WebViewController.h"
+#import "GHPWebViewController.h"
 
-@interface WebViewController ()
+@interface GHPWebViewController ()
 
 @end
 
-@implementation WebViewController
+@implementation GHPWebViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

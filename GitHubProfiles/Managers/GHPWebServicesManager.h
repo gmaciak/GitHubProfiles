@@ -1,12 +1,12 @@
 //
-//  WebServicesController.h
+//  GHPWebServicesManager.h
 //  GitHubProfiles
 //
 //  Created by Grzegorz Maciak on 27.09.2016.
 //  Copyright © 2016 Grzegorz Maciak. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "DSESingleton.h"
 #import "AFNetworking.h"
 
 FOUNDATION_EXPORT NSString* const GITHUB_API_CLIENT_ID;
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, GHPLoadingStatus) {
     GHPLoadingStatusError
 };
 
-@interface WebServicesController : NSObject {
+@interface GHPWebServicesManager : DSESingleton {
     AFHTTPSessionManager *urlSesionManager;
     __weak UIViewController* presentedViewController;
 }
