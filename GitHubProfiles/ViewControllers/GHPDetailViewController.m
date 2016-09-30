@@ -11,7 +11,15 @@
 #import "GHPWebServicesManager.h"
 #import "GHPMasterViewController.h"
 
-@implementation GHPDetailViewController
+@implementation GHPDetailViewController {
+    __block BOOL isLoadingFollowers;
+    __block BOOL isLoadingStars;
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self configureView];
+}
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
@@ -38,15 +46,19 @@
         [self reloadDetails];
         [self.avatarImageView setImageWithURL:url];
         
-        if (_detailItem[@"followersCount"] == nil) {
+        if (!isLoadingFollowers && _detailItem[@"followersCount"] == nil) {
+            isLoadingFollowers = YES;
             [[GHPWebServicesManager sharedInstance] getFollowersCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
                 _detailItem[@"followersCount"] = @(count);
+                isLoadingFollowers = NO;
                 [self reloadDetails];
             }];
         }
-        if (_detailItem[@"starsCount"] == nil) {
+        if (!isLoadingStars && _detailItem[@"starsCount"] == nil) {
+            isLoadingStars = YES;
             [[GHPWebServicesManager sharedInstance] getStarsCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
                 _detailItem[@"starsCount"] = @(count);
+                isLoadingStars = NO;
                 [self reloadDetails];
             }];
         }
@@ -67,17 +79,6 @@
     }
 
     self.detailDescriptionLabel.text = detailText;
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    [self configureView];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

@@ -189,5 +189,53 @@
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GitHubProfiles/Managers/GHPWebServicesManager.m"
+            timestampString = "496965030.739403"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
+            landmarkName = "-getCountOfItemsWithURLString:result:completion:"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[GHPWebServicesManager getCountOfItemsWithURLString:result:completion:]"
+                  moduleName = "GitHubProfiles"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/g.maciak/GitHub/GitHubProfiles/GitHubProfiles/Managers/GHPWebServicesManager.m"
+                  timestampString = "496963833.90772"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "216"
+                  endingLineNumber = "216"
+                  offsetFromSymbolStart = "637">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "__72-[GHPWebServicesManager getCountOfItemsWithURLString:result:completion:]_block_invoke"
+                  moduleName = "GitHubProfiles"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/g.maciak/GitHub/GitHubProfiles/GitHubProfiles/Managers/GHPWebServicesManager.m"
+                  timestampString = "496963833.907879"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "218"
+                  endingLineNumber = "218"
+                  offsetFromSymbolStart = "103">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

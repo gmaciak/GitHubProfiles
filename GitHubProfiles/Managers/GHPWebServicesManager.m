@@ -14,12 +14,12 @@ NSString* const GITHUB_API_APP_SECRET = @"06d24004d26e44a626917fa1b39d65bf5a4fb8
 
 NSUInteger const GITHUB_RESPONSE_PAGE_SIZE = 30;
 
-NSString* const GHPLoadingStatusKey = @"reposLoadingStatus";
 NSString* const GHPDataKey = @"data";
-NSString* const GHPURLKey = @"url";
 NSString* const GHPCellHeightKey = @"cellHeight";
 
 NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesControllerDidLoginNotification";
+
+typedef void(^GHPPageDownoldingCompletionBlock)(id result, NSHTTPURLResponse* lastResponse, NSError* error);
 
 @implementation GHPWebServicesManager
 
@@ -87,66 +87,7 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
     }];
 }
 
-#pragma mark - GitHub API helpers
-
-- (void)loadAllPagesWithURLString:(NSString*)urlString result:(NSMutableDictionary*)result completion:(void (^)(id result, NSHTTPURLResponse* lastResponse, NSError* error))completionHandler {
-    if (result == nil) {
-        result = [NSMutableDictionary dictionaryWithCapacity:3];
-    }
-    
-    NSInteger reposLoadingStatus = [result[GHPLoadingStatusKey] integerValue];
-    if (reposLoadingStatus != GHPLoadingStatusLoaded) {
-        
-        if (urlString) {
-            
-            result[GHPLoadingStatusKey] = @(GHPLoadingStatusLoading);
-            
-            NSURL *URL = [NSURL URLWithString:urlString];
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-            if (self.accessToken != nil) {
-                [request setValue:[NSString stringWithFormat:@"token %@",self.accessToken] forHTTPHeaderField:@"Authorization"];
-            }
-            
-            NSURLSessionDataTask *dataTask = [self.urlSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
-                
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                if (error) {
-                    NSLog(@"Error: %@", error);
-                    result[GHPLoadingStatusKey] = @(GHPLoadingStatusNotLoaded);
-                    
-                    if (completionHandler){
-                        completionHandler(nil, httpResponse, error);
-                    }
-                } else {
-//                    NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
-                    NSMutableArray* items = result[GHPDataKey];
-                    if (!items) {
-                        items = [NSMutableArray arrayWithCapacity:[responseObject count]];
-                        result[GHPDataKey] = items;
-                    }
-                    [items addObjectsFromArray:responseObject];
-                    
-                    NSString* nextReposPageURLString = [self nextPageLinkForResponse:httpResponse];
-                    if (nextReposPageURLString) {
-                        [self loadAllPagesWithURLString:nextReposPageURLString result:result completion:completionHandler];
-                    }
-                    else if (completionHandler){
-                        completionHandler(result, httpResponse, nil);
-                    }
-                }
-            }];
-            [dataTask resume];
-            
-        }
-        else if (completionHandler){
-            completionHandler(result, nil, nil);
-        }
-    }
-    else if (completionHandler){
-        completionHandler(result, nil, nil);
-    }
-}
-
+#pragma mark search
 - (void)searchUsersWithPhrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler {
     [self searchWithServiceName:@"users" phrase:phrase page:page completion:completionHandler];
 }
@@ -196,42 +137,122 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
     [dataTask resume];
 }
 
+#pragma mark Service items count
+- (void)getCountOfItemsWithURLString:(NSString*)urlString result:(NSMutableDictionary*)result completion:(GHPPageDownoldingCompletionBlock)completionHandler {
+    if (urlString) {
+        if (result == nil) {
+            result = [NSMutableDictionary dictionaryWithCapacity:3];
+            
+            // setup pages count
+            result[@"pages_count"] = @(1);
+        }
+        
+        NSURL *URL = [NSURL URLWithString:urlString];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+        if (self.accessToken != nil) {
+            [request setValue:[NSString stringWithFormat:@"token %@",self.accessToken] forHTTPHeaderField:@"Authorization"];
+        }
+        
+        NSURLSessionDataTask *dataTask = [self.urlSessionManager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+            
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+            if (error) {
+                NSLog(@"Error: %@", error);
+
+                if (completionHandler){
+                    completionHandler(nil, httpResponse, error);
+                }
+            } else {
+                //NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
+                
+                // set current page count as last page count (there may be no other pages than current)
+                result[@"last_page_count"] = @([responseObject count]);
+                
+                NSString* lastPageURLString = [self lastPageLinkForResponse:httpResponse];
+                
+                if (lastPageURLString) {
+                    // setup pages count
+                    result[@"pages_count"] = @([self pageNumberFromLink:lastPageURLString]);
+                }
+                
+                // get last page if it is different than first page
+                if (lastPageURLString && ![lastPageURLString isEqualToString:urlString]) {
+                    [self getCountOfItemsWithURLString:lastPageURLString result:result completion:completionHandler];
+                    
+                }else if (completionHandler){
+                    result[GHPDataKey] = @(([result[@"pages_count"] integerValue] -1) * GITHUB_RESPONSE_PAGE_SIZE + [result[@"last_page_count"] integerValue]);
+
+                    completionHandler(result, httpResponse, nil);
+                }
+                
+            }
+        }];
+        [dataTask resume];
+        
+    }
+    else if (completionHandler){
+        completionHandler(result, nil, nil);
+    }
+}
+
+- (void)getCountOfItemsWithServiceName:(NSString*)serviceName userID:(NSNumber*)userID result:(NSMutableDictionary*)result completion:(GHPPageDownoldingCompletionBlock)completionHandler {
+    NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/user/%@/%@?per_page=%li",[userID stringValue],serviceName,GITHUB_RESPONSE_PAGE_SIZE];
+    
+    // get items count of first and last page
+    [self getCountOfItemsWithURLString:urlString result:result completion:completionHandler];
+}
+
 - (void)getFollowersCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler {
-    NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/user/%@/followers",[userID stringValue]];
-    [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
+    [self getCountOfItemsWithServiceName:@"followers" userID:userID result:nil completion:^(id result, NSHTTPURLResponse *lastResponse, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error);
         } else {
             //NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
-            NSMutableArray* items = result[GHPDataKey];
             if (completionHandler) {
-                completionHandler(items.count);
+                completionHandler([result[GHPDataKey] unsignedIntegerValue]);
             }
         }
     }];
 }
 
 - (void)getStarsCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler {
-    NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/user/%@/starred",[userID stringValue]];
-    [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
+    [self getCountOfItemsWithServiceName:@"starred" userID:userID result:nil completion:^(id result, NSHTTPURLResponse *lastResponse, NSError *error) {
         if (error) {
             NSLog(@"Error: %@", error);
         } else {
-            NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
-            NSMutableArray* items = result[GHPDataKey];
+            //NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
             if (completionHandler) {
-                completionHandler(items.count);
+                completionHandler([result[GHPDataKey] unsignedIntegerValue]);
             }
         }
     }];
 }
 
-- (NSString*)nextPageLinkForResponse:(NSHTTPURLResponse*)response {
+#pragma mark - GitHub API helpers
+
+- (NSUInteger)pageNumberFromLink:(NSString*)urlString {
+    NSString* matchStriing = nil;
+    if (urlString) {
+        // regex to get the next page number
+        NSRegularExpression* nextPageLinkRegex = [NSRegularExpression regularExpressionWithPattern:@"&page=(\\d+)" options:NSRegularExpressionCaseInsensitive error:nil];
+        NSArray* matches = [nextPageLinkRegex matchesInString:urlString options:0 range:NSMakeRange(0, urlString.length)];
+        NSTextCheckingResult* match = [matches firstObject];
+        
+        if (match.numberOfRanges > 1) {
+            matchStriing = [urlString substringWithRange:[match rangeAtIndex:1]];
+            return [matchStriing integerValue];
+        }
+    }
+    return NSNotFound;
+}
+
+- (NSString*)linkForPage:(NSString*)pageName response:(NSHTTPURLResponse*)response {
     NSString* linkHeader = [response allHeaderFields][@"Link"];
     NSString* matchStriing = nil;
     if (linkHeader) {
         // regex to get the next page url string
-        NSRegularExpression* nextPageLinkRegex = [NSRegularExpression regularExpressionWithPattern:@"<(.+)>; rel=\"next\"" options:NSRegularExpressionCaseInsensitive error:nil];
+        NSString* regexPattern = [NSString stringWithFormat:@"<([^\\s]+)>; rel=\"%@\"",pageName];
+        NSRegularExpression* nextPageLinkRegex = [NSRegularExpression regularExpressionWithPattern:regexPattern options:NSRegularExpressionCaseInsensitive error:nil];
         NSArray* matches = [nextPageLinkRegex matchesInString:linkHeader options:0 range:NSMakeRange(0, linkHeader.length)];
         NSTextCheckingResult* match = [matches firstObject];
         
@@ -240,6 +261,14 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
         }
     }
     return matchStriing;
+}
+
+- (NSString*)nextPageLinkForResponse:(NSHTTPURLResponse*)response {
+    return [self linkForPage:@"next" response:response];
+}
+
+- (NSString*)lastPageLinkForResponse:(NSHTTPURLResponse*)response {
+    return [self linkForPage:@"last" response:response];
 }
 
 + (NSDictionary*)paramsDictFromQuery:(NSString*)queryString {
