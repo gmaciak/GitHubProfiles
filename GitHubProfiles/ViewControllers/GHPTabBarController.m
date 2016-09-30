@@ -9,10 +9,6 @@
 #import "GHPTabBarController.h"
 #import "GHPMasterViewController.h"
 
-@interface GHPTabBarController ()
-
-@end
-
 @implementation GHPTabBarController
 
 - (void)viewDidLoad {

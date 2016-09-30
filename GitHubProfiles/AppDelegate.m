@@ -30,13 +30,16 @@
 }
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
-    NSLog(@"[Line %4d] %s URL: %@\nOptions: %@",__LINE__,__PRETTY_FUNCTION__,url.absoluteString, options);
+//    NSLog(@"[Line %4d] %s URL: %@\nOptions: %@",__LINE__,__PRETTY_FUNCTION__,url.absoluteString, options);
     
     NSDictionary* params = [GHPWebServicesManager paramsDictFromQuery:url.query];
+    
+    // handle OAuth callback
     if (params[@"code"]) {
         [[GHPWebServicesManager sharedInstance] getAccessTokenWithCode:params[@"code"]];
+        return YES;
     }
-    return YES;
+    return NO;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

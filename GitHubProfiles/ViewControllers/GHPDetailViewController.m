@@ -11,11 +11,13 @@
 #import "GHPWebServicesManager.h"
 #import "GHPMasterViewController.h"
 
-@interface GHPDetailViewController ()
-
-@end
-
 @implementation GHPDetailViewController
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[GHPWebServicesManager sharedInstance] cancellAllTasks];
+}
 
 #pragma mark - Managing the detail item
 

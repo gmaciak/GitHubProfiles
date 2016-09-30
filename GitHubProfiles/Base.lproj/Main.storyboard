@@ -89,7 +89,7 @@
                         <subviews>
                             <searchBar contentMode="redraw" placeholder="Type user login" translatesAutoresizingMaskIntoConstraints="NO" id="6Wz-cL-ErI">
                                 <rect key="frame" x="0.0" y="64" width="320" height="44"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="search"/>
                             </searchBar>
                             <containerView opaque="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="dYJ-ng-Ecd">
                                 <rect key="frame" x="0.0" y="108" width="320" height="460"/>

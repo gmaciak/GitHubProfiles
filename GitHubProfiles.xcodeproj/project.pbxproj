@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		B53F6FCA1D92FAAD00669D33 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B53F6FC91D92FAAD00669D33 /* main.m */; };
 		B53F6FCD1D92FAAD00669D33 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B53F6FCC1D92FAAD00669D33 /* AppDelegate.m */; };
-		B53F6FD01D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B53F6FCE1D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld */; };
 		B53F6FD91D92FAAD00669D33 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B53F6FD71D92FAAD00669D33 /* Main.storyboard */; };
 		B53F6FDB1D92FAAD00669D33 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B53F6FDA1D92FAAD00669D33 /* Assets.xcassets */; };
 		B53F6FDE1D92FAAD00669D33 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B53F6FDC1D92FAAD00669D33 /* LaunchScreen.storyboard */; };
@@ -20,7 +19,6 @@
 		B5DE70201D9D2AA100A31ACF /* GHPMasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70191D9D2AA100A31ACF /* GHPMasterViewController.m */; };
 		B5DE70211D9D2AA100A31ACF /* GHPSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE701B1D9D2AA100A31ACF /* GHPSearchViewController.m */; };
 		B5DE70221D9D2AA100A31ACF /* GHPLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE701D1D9D2AA100A31ACF /* GHPLoginViewController.m */; };
-		B5DE70251D9D2E3600A31ACF /* GHPDataBaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70241D9D2E3600A31ACF /* GHPDataBaseManager.m */; };
 		B5DE702A1D9D2E7800A31ACF /* DSESingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70291D9D2E7800A31ACF /* DSESingleton.m */; };
 		B5DE70321D9E777F00A31ACF /* GHPTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70311D9E777F00A31ACF /* GHPTabBarController.m */; };
 		CB1DA221C0AA2A27D80C9963 /* libPods-GitHubProfiles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9012E914EB5A66B23B89211B /* libPods-GitHubProfiles.a */; };
@@ -51,7 +49,6 @@
 		B53F6FC91D92FAAD00669D33 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B53F6FCB1D92FAAD00669D33 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B53F6FCC1D92FAAD00669D33 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		B53F6FCF1D92FAAD00669D33 /* GitHubProfiles.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = GitHubProfiles.xcdatamodel; sourceTree = "<group>"; };
 		B53F6FD81D92FAAD00669D33 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B53F6FDA1D92FAAD00669D33 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B53F6FDD1D92FAAD00669D33 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -72,8 +69,6 @@
 		B5DE701B1D9D2AA100A31ACF /* GHPSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPSearchViewController.m; sourceTree = "<group>"; };
 		B5DE701C1D9D2AA100A31ACF /* GHPLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPLoginViewController.h; sourceTree = "<group>"; };
 		B5DE701D1D9D2AA100A31ACF /* GHPLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPLoginViewController.m; sourceTree = "<group>"; };
-		B5DE70231D9D2E3600A31ACF /* GHPDataBaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPDataBaseManager.h; sourceTree = "<group>"; };
-		B5DE70241D9D2E3600A31ACF /* GHPDataBaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPDataBaseManager.m; sourceTree = "<group>"; };
 		B5DE70281D9D2E7800A31ACF /* DSESingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSESingleton.h; sourceTree = "<group>"; };
 		B5DE70291D9D2E7800A31ACF /* DSESingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSESingleton.m; sourceTree = "<group>"; };
 		B5DE70301D9E777F00A31ACF /* GHPTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPTabBarController.h; sourceTree = "<group>"; };
@@ -157,7 +152,6 @@
 				B53F6FDA1D92FAAD00669D33 /* Assets.xcassets */,
 				B53F6FDC1D92FAAD00669D33 /* LaunchScreen.storyboard */,
 				B53F6FDF1D92FAAD00669D33 /* Info.plist */,
-				B53F6FCE1D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld */,
 				B53F6FC81D92FAAD00669D33 /* Supporting Files */,
 			);
 			path = GitHubProfiles;
@@ -192,8 +186,6 @@
 		B5DE70121D9D2AA100A31ACF /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				B5DE70231D9D2E3600A31ACF /* GHPDataBaseManager.h */,
-				B5DE70241D9D2E3600A31ACF /* GHPDataBaseManager.m */,
 				B5DE70131D9D2AA100A31ACF /* GHPWebServicesManager.h */,
 				B5DE70141D9D2AA100A31ACF /* GHPWebServicesManager.m */,
 			);
@@ -423,8 +415,6 @@
 				B5DE70221D9D2AA100A31ACF /* GHPLoginViewController.m in Sources */,
 				B5DE70201D9D2AA100A31ACF /* GHPMasterViewController.m in Sources */,
 				B5DE70321D9E777F00A31ACF /* GHPTabBarController.m in Sources */,
-				B5DE70251D9D2E3600A31ACF /* GHPDataBaseManager.m in Sources */,
-				B53F6FD01D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld in Sources */,
 				B5DE70211D9D2AA100A31ACF /* GHPSearchViewController.m in Sources */,
 				B5DE702A1D9D2E7800A31ACF /* DSESingleton.m in Sources */,
 				B53F6FCA1D92FAAD00669D33 /* main.m in Sources */,
@@ -682,19 +672,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		B53F6FCE1D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				B53F6FCF1D92FAAD00669D33 /* GitHubProfiles.xcdatamodel */,
-			);
-			currentVersion = B53F6FCF1D92FAAD00669D33 /* GitHubProfiles.xcdatamodel */;
-			path = GitHubProfiles.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = B53F6FBD1D92FAAD00669D33 /* Project object */;
 }

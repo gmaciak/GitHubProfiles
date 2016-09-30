@@ -8,10 +8,6 @@
 
 #import "GHPLoginViewController.h"
 
-@interface GHPLoginViewController ()
-
-@end
-
 @implementation GHPLoginViewController
 
 - (void)viewDidLoad {

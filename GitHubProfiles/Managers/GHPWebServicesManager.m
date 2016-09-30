@@ -87,7 +87,7 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
     }];
 }
 
-#pragma mark -
+#pragma mark - GitHub API helpers
 
 - (void)loadAllPagesWithURLString:(NSString*)urlString result:(NSMutableDictionary*)result completion:(void (^)(id result, NSHTTPURLResponse* lastResponse, NSError* error))completionHandler {
     if (result == nil) {
@@ -118,7 +118,7 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
                         completionHandler(nil, httpResponse, error);
                     }
                 } else {
-                    NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
+//                    NSLog(@"Responce hearders: %@",[httpResponse allHeaderFields]);
                     NSMutableArray* items = result[GHPDataKey];
                     if (!items) {
                         items = [NSMutableArray arrayWithCapacity:[responseObject count]];
@@ -196,63 +196,11 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
     [dataTask resume];
 }
 
-- (void)loadReposForUsers:(NSArray*)usersData progress:(void (^)(id item))progressHandler completion:(void (^)(void))completionHandler {
-    
-    dispatch_group_t group = dispatch_group_create();
-    
-    for (NSMutableDictionary* user in usersData) {
-        NSInteger reposLoadingStatus = [user[GHPLoadingStatusKey] integerValue];
-        if (reposLoadingStatus == GHPLoadingStatusNotLoaded) {
-            
-            NSString* urlString = user[@"repos_url"];
-            
-            if (urlString) {
-                
-                dispatch_group_enter(group);
-                [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
-                    if (error) {
-                        NSLog(@"Error: %@", error);
-                        user[GHPLoadingStatusKey] = @(GHPLoadingStatusError);
-
-                    } else {
-                        NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
-                        NSMutableArray* userRepos = result[GHPDataKey];
-                        
-                        // repos names list
-                        NSArray* reposNames = [userRepos valueForKeyPath:@"@distinctUnionOfObjects.name"];
-                        
-                        // repos names to display
-                        NSString* titlesListString = [reposNames componentsJoinedByString:@",\n"];
-                        user[@"reposNames"] = titlesListString;
-                        
-                        // repos text size
-                        CGSize size = [titlesListString sizeWithAttributes:@{NSFontAttributeName : [UIFont systemFontOfSize:11]}];
-                        user[GHPCellHeightKey] = @(size.height + 44.0f);
-                        
-                        // clean
-                        user[GHPLoadingStatusKey] = @(GHPLoadingStatusLoaded);
-                    }
-                    
-                    if (progressHandler) {
-                        progressHandler(user);
-                    }
-                    
-                    dispatch_group_leave(group);
-                }];
-            }
-            
-        }
-    }
-    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-        if (completionHandler) completionHandler();
-    });
-}
-
 - (void)getFollowersCountForUserID:(NSNumber*)userID completion:(void (^)(NSUInteger count))completionHandler {
     NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/user/%@/followers",[userID stringValue]];
     [self loadAllPagesWithURLString:urlString result:nil completion:^(id result, NSHTTPURLResponse* lastResponse, NSError* error) {
         if (error) {
-            //NSLog(@"Error: %@", error);
+            NSLog(@"Error: %@", error);
         } else {
             //NSLog(@"Responce hearders: %@",[lastResponse allHeaderFields]);
             NSMutableArray* items = result[GHPDataKey];

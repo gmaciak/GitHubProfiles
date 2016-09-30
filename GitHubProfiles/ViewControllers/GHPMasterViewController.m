@@ -45,6 +45,8 @@
     [super viewWillAppear:animated];
 }
 
+#pragma mark - Actions
+
 - (void)searchWithPhrase:(NSString*)phrase {
     searchPhrase = phrase;
     totalResultsCount = 0;

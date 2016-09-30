@@ -10,10 +10,6 @@
 #import "GHPMasterViewController.h"
 #import "AppDelegate.h"
 
-@interface GHPSearchViewController ()
-
-@end
-
 @implementation GHPSearchViewController
 
 - (void)viewDidLoad {
@@ -59,12 +55,13 @@
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(searchWithPhrase:) object:searchText];
-    [self performSelector:@selector(searchWithPhrase:) withObject:searchText afterDelay:0.2];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self performSelector:@selector(searchWithPhrase:) withObject:searchText afterDelay:0.3];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    [self performSelector:@selector(searchWithPhrase:) withObject:searchBar.text afterDelay:0.1];
 }
 
 @end
