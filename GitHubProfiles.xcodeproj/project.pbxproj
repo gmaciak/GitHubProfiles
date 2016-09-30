@@ -19,9 +19,10 @@
 		B5DE701F1D9D2AA100A31ACF /* GHPDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70171D9D2AA100A31ACF /* GHPDetailViewController.m */; };
 		B5DE70201D9D2AA100A31ACF /* GHPMasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70191D9D2AA100A31ACF /* GHPMasterViewController.m */; };
 		B5DE70211D9D2AA100A31ACF /* GHPSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE701B1D9D2AA100A31ACF /* GHPSearchViewController.m */; };
-		B5DE70221D9D2AA100A31ACF /* GHPWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE701D1D9D2AA100A31ACF /* GHPWebViewController.m */; };
+		B5DE70221D9D2AA100A31ACF /* GHPLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE701D1D9D2AA100A31ACF /* GHPLoginViewController.m */; };
 		B5DE70251D9D2E3600A31ACF /* GHPDataBaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70241D9D2E3600A31ACF /* GHPDataBaseManager.m */; };
 		B5DE702A1D9D2E7800A31ACF /* DSESingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70291D9D2E7800A31ACF /* DSESingleton.m */; };
+		B5DE70321D9E777F00A31ACF /* GHPTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DE70311D9E777F00A31ACF /* GHPTabBarController.m */; };
 		CB1DA221C0AA2A27D80C9963 /* libPods-GitHubProfiles.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9012E914EB5A66B23B89211B /* libPods-GitHubProfiles.a */; };
 /* End PBXBuildFile section */
 
@@ -69,12 +70,14 @@
 		B5DE70191D9D2AA100A31ACF /* GHPMasterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPMasterViewController.m; sourceTree = "<group>"; };
 		B5DE701A1D9D2AA100A31ACF /* GHPSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPSearchViewController.h; sourceTree = "<group>"; };
 		B5DE701B1D9D2AA100A31ACF /* GHPSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPSearchViewController.m; sourceTree = "<group>"; };
-		B5DE701C1D9D2AA100A31ACF /* GHPWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPWebViewController.h; sourceTree = "<group>"; };
-		B5DE701D1D9D2AA100A31ACF /* GHPWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPWebViewController.m; sourceTree = "<group>"; };
+		B5DE701C1D9D2AA100A31ACF /* GHPLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPLoginViewController.h; sourceTree = "<group>"; };
+		B5DE701D1D9D2AA100A31ACF /* GHPLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPLoginViewController.m; sourceTree = "<group>"; };
 		B5DE70231D9D2E3600A31ACF /* GHPDataBaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPDataBaseManager.h; sourceTree = "<group>"; };
 		B5DE70241D9D2E3600A31ACF /* GHPDataBaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPDataBaseManager.m; sourceTree = "<group>"; };
 		B5DE70281D9D2E7800A31ACF /* DSESingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DSESingleton.h; sourceTree = "<group>"; };
 		B5DE70291D9D2E7800A31ACF /* DSESingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DSESingleton.m; sourceTree = "<group>"; };
+		B5DE70301D9E777F00A31ACF /* GHPTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GHPTabBarController.h; sourceTree = "<group>"; };
+		B5DE70311D9E777F00A31ACF /* GHPTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GHPTabBarController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -200,14 +203,16 @@
 		B5DE70151D9D2AA100A31ACF /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				B5DE701A1D9D2AA100A31ACF /* GHPSearchViewController.h */,
+				B5DE701B1D9D2AA100A31ACF /* GHPSearchViewController.m */,
+				B5DE70301D9E777F00A31ACF /* GHPTabBarController.h */,
+				B5DE70311D9E777F00A31ACF /* GHPTabBarController.m */,
 				B5DE70161D9D2AA100A31ACF /* GHPDetailViewController.h */,
 				B5DE70171D9D2AA100A31ACF /* GHPDetailViewController.m */,
 				B5DE70181D9D2AA100A31ACF /* GHPMasterViewController.h */,
 				B5DE70191D9D2AA100A31ACF /* GHPMasterViewController.m */,
-				B5DE701A1D9D2AA100A31ACF /* GHPSearchViewController.h */,
-				B5DE701B1D9D2AA100A31ACF /* GHPSearchViewController.m */,
-				B5DE701C1D9D2AA100A31ACF /* GHPWebViewController.h */,
-				B5DE701D1D9D2AA100A31ACF /* GHPWebViewController.m */,
+				B5DE701C1D9D2AA100A31ACF /* GHPLoginViewController.h */,
+				B5DE701D1D9D2AA100A31ACF /* GHPLoginViewController.m */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -415,8 +420,9 @@
 				B53F6FCD1D92FAAD00669D33 /* AppDelegate.m in Sources */,
 				B5DE701E1D9D2AA100A31ACF /* GHPWebServicesManager.m in Sources */,
 				B5DE701F1D9D2AA100A31ACF /* GHPDetailViewController.m in Sources */,
-				B5DE70221D9D2AA100A31ACF /* GHPWebViewController.m in Sources */,
+				B5DE70221D9D2AA100A31ACF /* GHPLoginViewController.m in Sources */,
 				B5DE70201D9D2AA100A31ACF /* GHPMasterViewController.m in Sources */,
+				B5DE70321D9E777F00A31ACF /* GHPTabBarController.m in Sources */,
 				B5DE70251D9D2E3600A31ACF /* GHPDataBaseManager.m in Sources */,
 				B53F6FD01D92FAAD00669D33 /* GitHubProfiles.xcdatamodeld in Sources */,
 				B5DE70211D9D2AA100A31ACF /* GHPSearchViewController.m in Sources */,

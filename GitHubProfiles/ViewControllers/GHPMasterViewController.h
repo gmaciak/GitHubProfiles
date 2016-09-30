@@ -10,8 +10,17 @@
 
 @class GHPDetailViewController;
 
+typedef NS_ENUM(NSInteger, GHPMasterViewControllerSourceType) {
+    GHPMasterViewControllerSourceTypeUser,
+    GHPMasterViewControllerSourceTypeRepo
+};
+
 @interface GHPMasterViewController : UITableViewController <UISearchBarDelegate>
 
 @property (strong, nonatomic) GHPDetailViewController *detailViewController;
+@property (strong, nonatomic) NSString *searchPhrase;
+@property (nonatomic,assign) GHPMasterViewControllerSourceType sourceType;
+
+- (void)searchWithPhrase:(NSString*)phrase ;
 
 @end

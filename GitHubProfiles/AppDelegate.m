@@ -20,8 +20,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    _webServicesManager = [[GHPWebServicesManager alloc] init];
-    
     // Override point for customization after application launch.
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
@@ -36,7 +34,7 @@
     
     NSDictionary* params = [GHPWebServicesManager paramsDictFromQuery:url.query];
     if (params[@"code"]) {
-        [_webServicesManager getAccessTokenWithCode:params[@"code"]];
+        [[GHPWebServicesManager sharedInstance] getAccessTokenWithCode:params[@"code"]];
     }
     return YES;
 }

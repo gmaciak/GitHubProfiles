@@ -7,12 +7,12 @@
 //
 
 #import "GHPWebServicesManager.h"
-#import "GHPWebViewController.h"
+#import "GHPLoginViewController.h"
 
 NSString* const GITHUB_API_CLIENT_ID = @"cd9035e4a1e1b78ebeed";
 NSString* const GITHUB_API_APP_SECRET = @"06d24004d26e44a626917fa1b39d65bf5a4fb838";
 
-NSUInteger const GITHUB_DEFAULT_PAGE_SIZE = 30;
+NSUInteger const GITHUB_RESPONSE_PAGE_SIZE = 30;
 
 NSString* const GHPLoadingStatusKey = @"reposLoadingStatus";
 NSString* const GHPDataKey = @"data";
@@ -37,6 +37,8 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
     };
 }
 
+#pragma mark - Login
+
 - (void)dismissPresentedViewController {
     [presentedViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -44,7 +46,7 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
 - (void)login:(id)sender {
     NSString* urlString = [NSString stringWithFormat: @"https://github.com/login/oauth/authorize?client_id=%@",GITHUB_API_CLIENT_ID];
     
-    GHPWebViewController* controller = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"WebViewController"];
+    GHPLoginViewController* controller = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"WebViewController"];
     controller.startURL = urlString;
     
     UINavigationController* navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -84,6 +86,8 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
         NSLog(@"Error: %@", error);
     }];
 }
+
+#pragma mark -
 
 - (void)loadAllPagesWithURLString:(NSString*)urlString result:(NSMutableDictionary*)result completion:(void (^)(id result, NSHTTPURLResponse* lastResponse, NSError* error))completionHandler {
     if (result == nil) {
@@ -144,9 +148,17 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
 }
 
 - (void)searchUsersWithPhrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler {
-    NSString* searchQuery = [[NSString stringWithFormat:@"q=%@&page=%li&per_page=%li",phrase,page,GITHUB_DEFAULT_PAGE_SIZE] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    [self searchWithServiceName:@"users" phrase:phrase page:page completion:completionHandler];
+}
+
+- (void)searchReposWithPhrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler {
+    [self searchWithServiceName:@"repositories" phrase:phrase page:page completion:completionHandler];
+}
+
+- (void)searchWithServiceName:(NSString*)serviceName phrase:(NSString*)phrase page:(NSUInteger)page completion:(void (^)(NSDictionary* data))completionHandler {
+    NSString* searchQuery = [[NSString stringWithFormat:@"q=%@&page=%li&per_page=%li",phrase,page,GITHUB_RESPONSE_PAGE_SIZE] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
     
-    NSString* urlString = [@"https://api.github.com/search/users" stringByAppendingFormat:@"?%@",searchQuery];
+    NSString* urlString = [NSString stringWithFormat:@"https://api.github.com/search/%@?%@", serviceName, searchQuery];
     NSURL *URL = [NSURL URLWithString:urlString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
     if (self.accessToken != nil) {
@@ -165,7 +177,7 @@ NSString* const GHPWebServisesControllerDidLoginNotification = @"GHPWebServisesC
             if (httpResponse.statusCode == 403 && [resetDate compare:[NSDate date]] == NSOrderedDescending) {
                 NSUInteger secondsLeft = rateLimitReset - [[NSDate date] timeIntervalSince1970];
                 
-                NSString* message = [NSString stringWithFormat:@"Could not load next users. Please wait %li second(s) and try again.",secondsLeft];
+                NSString* message = [NSString stringWithFormat:@"Could not load next %@. Please wait %li second(s) and try again.",serviceName,secondsLeft];
                 UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Ups" message:message preferredStyle:UIAlertControllerStyleAlert];
                 
                 [alert addAction:[UIAlertAction actionWithTitle:@"Try again" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {

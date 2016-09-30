@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GHPWebViewController : UIViewController
+@interface GHPLoginViewController : UIViewController
 
 @property (weak, nonatomic) IBOutlet UIWebView* webView;
 @property (strong, nonatomic) NSString* startURL;

@@ -22,6 +22,8 @@
 
 @implementation GHPMasterViewController
 
+@synthesize searchPhrase;
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -44,9 +46,11 @@
 }
 
 - (void)searchWithPhrase:(NSString*)phrase {
+    searchPhrase = phrase;
     totalResultsCount = 0;
     [tableData removeAllObjects];
-    [self loadUsersWithPhrase:phrase];
+    
+    [self loadResultsWithPhrase:phrase];
 }
 
 -(void)loginNotificationHandler:(NSNotification*)notification {
@@ -66,46 +70,37 @@
     }
 }
 
-#pragma mark - UISearchBarDelegate
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(searchWithPhrase:) object:searchPhrase];
-    searchPhrase = searchBar.text;
-    [self performSelector:@selector(searchWithPhrase:) withObject:searchPhrase afterDelay:0.2];
-}
-
 #pragma mark - GitHub Web Api requests
 
-- (void)loadUsersWithPhrase:(NSString*)phrase {
+- (void)loadResultsWithPhrase:(NSString*)phrase {
     if (phrase.length > 0) {
         NSUInteger page = [self nextPageNumber];
         if (page != NSNotFound) {
             [[GHPWebServicesManager sharedInstance] cancellAllTasks];
-            [[GHPWebServicesManager sharedInstance] searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
-                if (data) {
-                    [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];
-//                    [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
-                    NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
-                    [self.tableView reloadData];
-                    [self loadRepos];
-                }
-            }];
+            
+            if (_sourceType == GHPMasterViewControllerSourceTypeUser) {
+                [[GHPWebServicesManager sharedInstance] searchUsersWithPhrase:phrase page:page completion:^(NSDictionary *data) {
+                    [self updateResultsListWithNewData:data];
+                }];
+            }else{
+                [[GHPWebServicesManager sharedInstance] searchReposWithPhrase:phrase page:page completion:^(NSDictionary *data) {
+                    [self updateResultsListWithNewData:data];
+                }];
+            }
+            
         }
     }else{
         [self.tableView reloadData];
     }
 }
 
-- (void)loadRepos {
-    
-    [[GHPWebServicesManager sharedInstance] loadReposForUsers:tableData progress:^(id item) {
-        NSInteger index = [tableData indexOfObject:item];
-        if (index != NSNotFound) {
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-        }
-    } completion:^{
-        
-    }];
+- (void)updateResultsListWithNewData:(NSDictionary*)data {
+    if (data) {
+        [tableData addObjectsFromArray:[self userDataWithResponseObject:data]];
+        //                    [tableData sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"id" ascending:YES]]];
+        NSLog(@"Items loaded: %li totalCount: %li", tableData.count, totalResultsCount);
+        [self.tableView reloadData];
+    }
 }
 
 #pragma mark GitHub Web Api helpers
@@ -117,7 +112,7 @@
     else if (tableData.count == totalResultsCount) {
         return NSNotFound;
     }
-    NSUInteger loadedPagesCount = (tableData.count/GITHUB_DEFAULT_PAGE_SIZE);
+    NSUInteger loadedPagesCount = (tableData.count/GITHUB_RESPONSE_PAGE_SIZE);
     return loadedPagesCount + 1;
 }
 
@@ -145,10 +140,14 @@
     for (NSDictionary* item in items) {
         NSMutableDictionary* userData = [[NSMutableDictionary alloc] initWithCapacity:5];
         userData[@"id"] = item[@"id"];
-        userData[@"login"] = item[@"login"];
+        userData[@"login"] = item[@"login"] ?: item[@"owner"][@"login"];
+        userData[@"name"] = item[@"name"];
         userData[@"repos_url"] = item[@"repos_url"];
         userData[@"followers_url"] = item[@"followers_url"];
         userData[@"avatar_url"] = item[@"avatar_url"];
+        userData[@"stars"] = item[@"stargazers_count"];
+        userData[@"watchers"] = item[@"watchers_count"];
+        userData[@"source_type"] = @(self.sourceType);
         [usersData addObject:userData];
     }
     
@@ -179,33 +178,19 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(nonnull UITableViewCell *)cell forRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
     if (indexPath.row == tableData.count - 1 && tableData.count < totalResultsCount) {
-        [self loadUsersWithPhrase:searchPhrase];
+        [self loadResultsWithPhrase:searchPhrase];
     }
 }
 
 - (void)configureCell:(UITableViewCell *)cell withObject:(NSDictionary *)object {
-    cell.textLabel.text = object[@"login"] ?: @"";
     
-    BOOL shouldShowIndicator = YES;
-    NSString* reposNames = object[@"reposNames"];
-    if (reposNames) {
-        cell.detailTextLabel.text = reposNames.length > 0 ? reposNames : @"User has no repository.";
-        shouldShowIndicator = NO;
-    }
-    else if ([object[GHPLoadingStatusKey] integerValue] == GHPLoadingStatusError) {
-        cell.detailTextLabel.text = @"You need to login to get repos info.";
-        shouldShowIndicator = NO;
-    }
-    else{
-        cell.detailTextLabel.text = @"";
+    if (_sourceType == GHPMasterViewControllerSourceTypeUser) {
+        cell.textLabel.text = object[@"login"] ?: @"";
+    }else{
+        cell.textLabel.text = object[@"name"] ?: @"";
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"Owner: %@",object[@"login"] ?: @""];
     }
     
-    UIActivityIndicatorView* indicator = [cell.contentView viewWithTag:3];
-    if (!indicator.isAnimating && shouldShowIndicator) {
-        [indicator startAnimating];
-    }else if (indicator.isAnimating && !shouldShowIndicator) {
-        [indicator stopAnimating];
-    }
 }
 
 @end

@@ -6,13 +6,13 @@
 //  Copyright © 2016 Grzegorz Maciak. All rights reserved.
 //
 
-#import "GHPWebViewController.h"
+#import "GHPLoginViewController.h"
 
-@interface GHPWebViewController ()
+@interface GHPLoginViewController ()
 
 @end
 
-@implementation GHPWebViewController
+@implementation GHPLoginViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];

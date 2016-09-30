@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface GHPSearchViewController : UIViewController
+@interface GHPSearchViewController : UIViewController <UISearchBarDelegate, UITabBarControllerDelegate>
 
 @property(nonatomic, weak) IBOutlet UISearchBar* searchBar;
 @property(nonatomic, weak) IBOutlet UIView* resultContainer;

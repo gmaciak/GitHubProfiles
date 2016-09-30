@@ -9,6 +9,7 @@
 #import "GHPDetailViewController.h"
 #import "UIImageView+AFNetworking.h"
 #import "GHPWebServicesManager.h"
+#import "GHPMasterViewController.h"
 
 @interface GHPDetailViewController ()
 
@@ -32,8 +33,9 @@
     if (self.detailItem) {
         NSString* avatarURLString = _detailItem[@"avatar_url"];
         NSURL* url = [NSURL URLWithString:avatarURLString];
-        [self.avatarImageView setImageWithURL:url];
         [self reloadDetails];
+        [self.avatarImageView setImageWithURL:url];
+        
         if (_detailItem[@"followersCount"] == nil) {
             [[GHPWebServicesManager sharedInstance] getFollowersCountForUserID:_detailItem[@"id"] completion:^(NSUInteger count) {
                 _detailItem[@"followersCount"] = @(count);
@@ -50,9 +52,18 @@
 }
 
 - (void)reloadDetails {
-    NSMutableString* detailText = [NSMutableString stringWithFormat:@"Login: %@\n",_detailItem[@"login"]];
-    [detailText appendFormat:@"\nFollowers: %@", _detailItem[@"followersCount"] ?: @"--"];
-    [detailText appendFormat:@"\nStarred %@ repos", _detailItem[@"starsCount"] ?: @"--"];
+    NSMutableString* detailText = nil;
+    if ([_detailItem[@"source_type"] integerValue] == GHPMasterViewControllerSourceTypeUser) {
+        detailText = [NSMutableString stringWithFormat:@"User: %@\n",_detailItem[@"login"]];
+        [detailText appendFormat:@"\nFollowers: %@", _detailItem[@"followersCount"] ?: @"--"];
+        [detailText appendFormat:@"\nStarred repos: %@", _detailItem[@"starsCount"] ?: @"--"];
+    }else{
+        detailText = [NSMutableString stringWithFormat:@"Repository name: %@\n",_detailItem[@"name"]];
+        [detailText appendFormat:@"\nWatchers: %@", _detailItem[@"watchers"] ?: @"--"];
+        [detailText appendFormat:@"\nStars: %@", _detailItem[@"stars"] ?: @"--"];
+        [detailText appendFormat:@"\nOwner: %@", _detailItem[@"login"] ?: @"--"];
+    }
+
     self.detailDescriptionLabel.text = detailText;
 }
 
